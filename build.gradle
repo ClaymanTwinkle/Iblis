@@ -55,7 +55,7 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.2-14.23.2.2611"
+    version = "1.12.2-14.23.5.2768"
     runDir = "run"
     mappings = "snapshot_20170822"
 }
@@ -67,7 +67,7 @@ jar {
     }
 }
 
-task headshots(type: Jar) {  
+task headshots(type: Jar) {
     dependsOn "build"
 	version = "1.2.3"
 	baseName = "iblis-headshots"
@@ -81,7 +81,7 @@ task headshots(type: Jar) {
     }
 }
 
-task dev(type: Jar) {  
+task dev(type: Jar) {
     from(sourceSets.main.output)
     classifier = "dev"
 }
