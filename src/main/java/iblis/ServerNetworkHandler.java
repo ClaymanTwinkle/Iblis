@@ -1,11 +1,8 @@
 package iblis;
 
-import java.io.IOException;
-
 import iblis.crafting.IRecipeRaiseSkill;
 import iblis.init.IblisParticles;
 import iblis.item.ICustomLeftClickItem;
-import iblis.item.ItemFirearmsBase;
 import iblis.player.PlayerCharacteristics;
 import iblis.player.PlayerSkills;
 import iblis.util.PlayerUtils;
@@ -39,6 +36,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
+import java.io.IOException;
+
 public class ServerNetworkHandler {
 
 	public enum ClientCommands {
@@ -46,7 +45,7 @@ public class ServerNetworkHandler {
 	}
 
 	public enum ServerCommands {
-		UPDATE_CHARACTERISTIC, RELOAD_WEAPON, APPLY_SPRINTING_SPEED_MODIFIER, RUNNED_DISTANCE_INFO, SPRINTING_BUTTON_INFO, TRAIN_TO_CRAFT, LEFT_CLICK, SHIELD_PUNCH, KICK, LAB_TABLE_GUI_ACTION;
+		UPDATE_CHARACTERISTIC, APPLY_SPRINTING_SPEED_MODIFIER, RUNNED_DISTANCE_INFO, SPRINTING_BUTTON_INFO, TRAIN_TO_CRAFT, LEFT_CLICK, SHIELD_PUNCH, KICK, LAB_TABLE_GUI_ACTION;
 	}
 
 	protected static FMLEventChannel channel;
@@ -75,20 +74,6 @@ public class ServerNetworkHandler {
 			EntityPlayerMP player = (EntityPlayerMP) world.getEntityByID(playerEntityId);
 			if (player != null)
 				world.addScheduledTask(new TaskRaiseCharacteristic(characteristic, player));
-			break;
-		case RELOAD_WEAPON:
-			playerEntityId = byteBufInputStream.readInt();
-			worldDimensionId = byteBufInputStream.readInt();
-			world = server.getWorld(worldDimensionId);
-			player = (EntityPlayerMP) world.getEntityByID(playerEntityId);
-			if (player == null)
-				break;
-			ItemStack held = player.getHeldItem(EnumHand.MAIN_HAND);
-			if (held.getItem() instanceof ItemFirearmsBase) {
-				ItemFirearmsBase gun = (ItemFirearmsBase) held.getItem();
-				player.setHeldItem(EnumHand.MAIN_HAND, gun.getReloading(held));
-				gun.playReloadingSoundEffect(player);
-			}
 			break;
 		case APPLY_SPRINTING_SPEED_MODIFIER:
 			playerEntityId = byteBufInputStream.readInt();

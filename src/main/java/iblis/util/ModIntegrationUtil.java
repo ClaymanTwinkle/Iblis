@@ -1,6 +1,5 @@
 package iblis.util;
 
-import iblis.item.ItemFirearmsBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -19,8 +18,7 @@ public class ModIntegrationUtil {
 			return true;
 
 		if (Loader.isModLoaded("tconstruct")) {
-			if (entity instanceof slimeknights.tconstruct.tools.common.entity.EntityArrow)
-				return true;
+			return entity instanceof slimeknights.tconstruct.tools.common.entity.EntityArrow;
 		}
 		return false;
 	}
@@ -28,29 +26,18 @@ public class ModIntegrationUtil {
 	public static boolean isCustomModBolt(Entity entity) {
 		if (!(entity instanceof EntityArrow))
 			return false;
-		if (Loader.isModLoaded("tconstruct")) {
-			if (entity instanceof slimeknights.tconstruct.tools.common.entity.EntityBolt)
-				return true;
-		}
-		return false;
+		return Loader.isModLoaded("tconstruct") && entity instanceof slimeknights.tconstruct.tools.common.entity.EntityBolt;
 	}
 	
 	public static boolean isCustomModThrowable(Entity entity) {
 		if (!(entity instanceof EntityArrow))
 			return false;
-		if (Loader.isModLoaded("tconstruct")) {
-			if (entity instanceof slimeknights.tconstruct.tools.common.entity.EntityShuriken)
-				return true;
-		}
-		return false;
+		return Loader.isModLoaded("tconstruct") && entity instanceof slimeknights.tconstruct.tools.common.entity.EntityShuriken;
 	}
 	
 	public static boolean shouldShowAimFrame(Item item, EntityPlayer player) {
-		if(item instanceof ItemFirearmsBase)
-			return true;
 		if (Loader.isModLoaded("tconstruct")) {
-			if (!player.isHandActive() && item instanceof slimeknights.tconstruct.tools.ranged.item.CrossBow)
-				return true;
+			return !player.isHandActive() && item instanceof slimeknights.tconstruct.tools.ranged.item.CrossBow;
 		}
 		return false;
 	}

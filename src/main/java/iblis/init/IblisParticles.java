@@ -1,7 +1,6 @@
 package iblis.init;
 
 public enum IblisParticles {
-	BOULDER,
 	SPARK, 
 	SLIVER, 
 	BULLET_HOLE,

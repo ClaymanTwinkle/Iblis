@@ -1,6 +1,5 @@
 package iblis;
 
-import iblis.init.IblisItems;
 import iblis.player.PlayerCharacteristics;
 import iblis.player.PlayerSkills;
 import net.minecraftforge.common.config.Configuration;
@@ -68,8 +67,6 @@ public class IblisModConfig {
 				Configuration.CATEGORY_GENERAL, false, "If true mobs will use regular AI. If false - mobs will have a chance to spot player at any distance.");
 		IblisMod.eventHandler.mobReactOnlyOnShooting = configuration.getBoolean("mob_react_only_on_shooting",
 				Configuration.CATEGORY_GENERAL, false, "If 'no_increased_mob_seek_range' is false and this option is true only shooting with shotgun will trigger increased mob range mechanics.");
-		IblisItems.MEDKIT.instantHealing = configuration.getBoolean("medkit_instant_healing",
-				Configuration.CATEGORY_GENERAL, false, "Medkit heal instantly on use.");
 		IblisMod.proxy.setToggleSprintByKeyBindSprint(configuration.getBoolean("toggle_sprint_by_sprint_button",
 				Configuration.CATEGORY_GENERAL, false, "If set to true sprint button will toggle sprint instead of setting it."));
 		IblisMod.proxy.setHPRender(configuration.getBoolean("render_hp_bar",

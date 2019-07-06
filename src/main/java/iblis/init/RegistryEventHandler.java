@@ -1,19 +1,16 @@
 package iblis.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import iblis.IblisMod;
-import iblis.item.ItemIngot;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
-import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegistryEventHandler {
 	
@@ -34,9 +31,6 @@ public class RegistryEventHandler {
 		for(Item item:items)
 			event.getRegistry().register(item);
 		IblisMod.proxy.registerRenders();
-		OreDictionary.registerOre("ingotSteel", new ItemStack(IblisItems.INGOT, 1, ItemIngot.STEEL));
-		OreDictionary.registerOre("ingotBronze", new ItemStack(IblisItems.INGOT, 1, ItemIngot.BRONZE));
-		OreDictionary.registerOre("nuggetSteel", IblisItems.NUGGET_STEEL);
 	}
 	
 	@SubscribeEvent

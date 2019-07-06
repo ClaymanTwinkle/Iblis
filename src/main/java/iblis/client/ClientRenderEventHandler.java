@@ -1,7 +1,5 @@
 package iblis.client;
 
-import iblis.constants.NBTTagsKeys;
-import iblis.init.IblisItems;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -12,7 +10,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -66,15 +63,6 @@ public class ClientRenderEventHandler {
 			renderFirstPersonPlayerkickAnimation -= 0.1f;
 			return;
 		}
-		EntityPlayer player = Minecraft.getMinecraft().player;
-		ItemStack stack = player.getActiveItemStack();
-		if (!player.isHandActive() || stack.getItem() != IblisItems.CROSSBOW_RELOADING) {
-			return;
-		}
-		int cockedBowstring = stack.getTagCompound().getInteger(NBTTagsKeys.COCKED_STATE);
-		int ammo = stack.getTagCompound().getInteger(NBTTagsKeys.AMMO);
-		if (ammo == cockedBowstring)
-			GlStateManager.rotate(pitch - 90f, 1f, 0f, 0f);
 	}
 	
     private void renderLegsFirstPerson(float partialTicks, float pitch)
@@ -99,8 +87,8 @@ public class ClientRenderEventHandler {
         modelplayer.bipedLeftLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_PANTS_LEG);
         modelplayer.bipedRightLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_PANTS_LEG);
         GlStateManager.enableBlend();
-        float f5 = clientPlayer.prevLimbSwingAmount + (clientPlayer.limbSwingAmount - clientPlayer.prevLimbSwingAmount) * partialTicks;
-        float f6 = clientPlayer.limbSwing - clientPlayer.limbSwingAmount * (1.0F - partialTicks);
+        float f5;
+        float f6;
         f5 = renderFirstPersonPlayerkickAnimation;
         f6 = 1.5f;
         modelplayer.setLivingAnimations(clientPlayer, f6, f5, partialTicks);

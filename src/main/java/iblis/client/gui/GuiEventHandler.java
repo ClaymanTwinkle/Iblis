@@ -1,17 +1,11 @@
 package iblis.client.gui;
 
-import java.util.Random;
-
 import iblis.ClientNetworkHandler;
 import iblis.IblisMod;
 import iblis.ServerNetworkHandler.ServerCommands;
 import iblis.client.ClientGameEventHandler;
-import iblis.constants.NBTTagsKeys;
 import iblis.crafting.IRecipeRaiseSkill;
 import iblis.crafting.PlayerSensitiveShapedRecipeWrapper;
-import iblis.init.IblisItems;
-import iblis.item.ItemFirearmsBase;
-import iblis.item.ItemShotgunReloading;
 import iblis.player.PlayerCharacteristics;
 import iblis.player.PlayerSkills;
 import iblis.util.ModIntegrationUtil;
@@ -33,11 +27,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.ResourceLocation;
@@ -49,6 +40,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 @SideOnly(Side.CLIENT)
 public class GuiEventHandler {
@@ -191,8 +184,6 @@ public class GuiEventHandler {
 				// Right line bottom
 				Gui.drawRect(centerX + frameSize / 2, centerY + frameSize / 3 - 1, centerX + frameSize / 2 - 1,
 						centerY + frameSize / 2 - 1, colour);
-				if (heldItem instanceof ItemFirearmsBase)
-					action.setCanceled(true);
 			}
 		}
 		if (!IblisMod.isRPGHUDLoaded && action.getType() == RenderGameOverlayEvent.ElementType.HEALTH) {
@@ -211,29 +202,10 @@ public class GuiEventHandler {
 	
 	private void renderAmmoAndSprintingState(int width, int height) {
 		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer player = (EntityPlayer) mc.getRenderViewEntity();
 		GlStateManager.enableBlend();
 
 		mc.mcProfiler.startSection("iblisMod");
-		int right = width / 2 + 91;
-		int top = height - GuiIngameForge.left_height;
 		mc.getTextureManager().bindTexture(IBLIS_ICONS);
-		ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-		if (!heldItem.isEmpty() && heldItem.hasTagCompound()
-				&& (heldItem.getItem() == IblisItems.SHOTGUN || heldItem.getItem() == IblisItems.SHOTGUN_RELOADING)) {
-			NBTTagList ammoList = heldItem.getTagCompound().getTagList(NBTTagsKeys.AMMO, 10);
-			int ammo = ammoList.tagCount();
-			for (int i = 0; i < ItemShotgunReloading.MAX_AMMO; i++) {
-				int x = right - 7 - i * 7;
-				int y = top - 27;
-				if (i < ammo) {
-					 NBTTagCompound cartridge = ammoList.getCompoundTagAt(i);
-					mc.ingameGUI.drawTexturedModalRect(x, y, 7*(1+cartridge.getInteger(NBTTagsKeys.AMMO_TYPE)), 0, 7, 16);
-				} else {
-					mc.ingameGUI.drawTexturedModalRect(x, y, 0, 0, 7, 16);
-				}
-			}
-		}
 		int sprintCounter = ClientGameEventHandler.instance.sprintCounter;
 		int sprintButtonCounter = ClientGameEventHandler.instance.sprintButtonCounter;
 

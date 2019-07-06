@@ -1,11 +1,7 @@
 package iblis.event;
 
-import java.util.List;
-
 import com.google.common.collect.Multimap;
-
 import iblis.IblisMod;
-import iblis.init.IblisItems;
 import iblis.init.IblisPotions;
 import iblis.player.FoodStatsExtended;
 import iblis.player.PlayerCharacteristics;
@@ -30,11 +26,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.FoodStats;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -43,12 +35,8 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -58,13 +46,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.List;
+
 public class IblisEventHandler {
 
 	public boolean noIncreasedMobSeekRange = false;
 	public boolean mobReactOnlyOnShooting = false;
-	
-	public int lastPlayerShooterID = -1;
-	public int shootingSoundCountdownTimer = -1;
+
+	private int shootingSoundCountdownTimer = -1;
 	
 	@SubscribeEvent
 	public void onPlayerTickEvent(PlayerTickEvent event) {
@@ -82,6 +71,7 @@ public class IblisEventHandler {
 			return;
 		World world = player.world;
 		if (mobReactOnlyOnShooting) {
+			int lastPlayerShooterID = -1;
 			if (player.getEntityId() == lastPlayerShooterID && --shootingSoundCountdownTimer > 0)
 				this.notifyRandomEntityAboutPlayer(world, player);
 		} else {
@@ -174,7 +164,7 @@ public class IblisEventHandler {
 		int d = MathHelper.ceil(living.getDistanceToEntity(player));
 		PotionEffect pea = new PotionEffect(IblisPotions.AWARENESS, 1200, d);
 		for (EntityLivingBase comrad : comrads) {
-			((EntityLiving) comrad).addPotionEffect(pea);
+			comrad.addPotionEffect(pea);
 		}
 	}
 
@@ -316,7 +306,7 @@ public class IblisEventHandler {
 			int d = MathHelper.ceil(target.getDistanceToEntity(shooter));
 			PotionEffect pea = new PotionEffect(IblisPotions.AWARENESS, 1200, d);
 			for (EntityLivingBase comrad : comrads) {
-				((EntityLiving) comrad).addPotionEffect(pea);
+				comrad.addPotionEffect(pea);
 			}
 		}
 		if (event.getSource().isProjectile()) {
@@ -360,23 +350,15 @@ public class IblisEventHandler {
 		if (!(event.getEntityLiving() instanceof EntityPlayer))
 			return;
 		boolean isBow = event.getItem().getItem() instanceof ItemBow;
-		boolean isCrossbow = event.getItem().getItem() == IblisItems.CROSSBOW_RELOADING;
-		if (!(isBow || isCrossbow))
+		if (!(isBow))
 			return;
-		if (isBow && !PlayerSkills.ARCHERY.enabled)
-			return;
-		if (isCrossbow && !PlayerSkills.SHARPSHOOTING.enabled)
+		if (!PlayerSkills.ARCHERY.enabled)
 			return;
 		EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-		double skillValue = 0d;
-		if(isBow)
-			skillValue = PlayerSkills.ARCHERY.getFullSkillValue(player) + 1.0d;
-		else
-			skillValue = PlayerSkills.SHARPSHOOTING.getFullSkillValue(player) + 1.0d;
+		double skillValue;
+		skillValue = PlayerSkills.ARCHERY.getFullSkillValue(player) + 1.0d;
 		int duration = event.getDuration();
 		// To avoid skipping crossbow reload animation
-		if (isCrossbow && duration <= 6)
-			return;
 		if (skillValue < 1.0d)
 			return;
 		if (skillValue > 63.0d) {
