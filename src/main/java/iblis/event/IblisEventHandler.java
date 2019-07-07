@@ -10,12 +10,10 @@ import iblis.player.SharedIblisAttributes;
 import iblis.util.ModIntegrationUtil;
 import iblis.util.PlayerUtils;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -27,9 +25,7 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -53,8 +49,6 @@ public class IblisEventHandler {
 	public boolean noIncreasedMobSeekRange = false;
 	public boolean mobReactOnlyOnShooting = false;
 
-	private int shootingSoundCountdownTimer = -1;
-	
 	@SubscribeEvent
 	public void onPlayerTickEvent(PlayerTickEvent event) {
 		if(event.phase != TickEvent.Phase.START)
@@ -70,13 +64,7 @@ public class IblisEventHandler {
 		if (player.isSpectator())
 			return;
 		World world = player.world;
-		if (mobReactOnlyOnShooting) {
-			int lastPlayerShooterID = -1;
-			if (player.getEntityId() == lastPlayerShooterID && --shootingSoundCountdownTimer > 0)
-				this.notifyRandomEntityAboutPlayer(world, player);
-		} else {
-			this.notifyRandomEntityAboutPlayer(world, player);
-		}
+
 		int knock = PlayerUtils.getKnockState(player);
 		if (knock == 0)
 			return;
@@ -137,35 +125,6 @@ public class IblisEventHandler {
 		}
 		if (playSound)
 			player.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 0.8F, 0.8F + world.rand.nextFloat() * 0.4F);
-	}
-
-	private void notifyRandomEntityAboutPlayer(World world, EntityPlayer player) {
-		if (noIncreasedMobSeekRange)
-			return;
-		if(world.loadedEntityList.isEmpty())
-			return;
-		Entity randomEntity = world.loadedEntityList.get(world.rand.nextInt(world.loadedEntityList.size()));
-		if (!(randomEntity instanceof EntityLiving))
-			return;
-		if (!(randomEntity instanceof IMob))
-			return;
-		EntityLiving living = (EntityLiving) randomEntity;
-		Vec3d look = living.getLookVec();
-		double dx = player.posX - living.posX;
-		double dy = player.posY - living.posY;
-		double dz = player.posZ - living.posZ;
-		double aligmentFactor = look.x * dx + look.y * dy + look.z * dz;
-		if (aligmentFactor < 0)
-			return;
-		if (!living.canEntityBeSeen(player))
-			return;
-		List<EntityLiving> comrads = world.getEntitiesWithinAABB(EntityLiving.class,
-				(new AxisAlignedBB(living.getPosition()).grow(16, 4, 16)));
-		int d = MathHelper.ceil(living.getDistanceToEntity(player));
-		PotionEffect pea = new PotionEffect(IblisPotions.AWARENESS, 1200, d);
-		for (EntityLivingBase comrad : comrads) {
-			comrad.addPotionEffect(pea);
-		}
 	}
 
 	@SubscribeEvent
@@ -300,34 +259,19 @@ public class IblisEventHandler {
 		Entity shooter = source.getTrueSource();
 		if (shooter == null)
 			return;
-		if (target instanceof EntityLiving && target instanceof IMob) {
-			List<EntityLivingBase> comrads = target.world.getEntitiesWithinAABB(target.getClass(),
-					(new AxisAlignedBB(target.getPosition()).grow(16, 4, 16)));
-			int d = MathHelper.ceil(target.getDistanceToEntity(shooter));
-			PotionEffect pea = new PotionEffect(IblisPotions.AWARENESS, 1200, d);
-			for (EntityLivingBase comrad : comrads) {
-				comrad.addPotionEffect(pea);
-			}
-		}
-		if (event.getSource().isProjectile()) {
+		if (shooter instanceof EntityPlayerMP && event.getSource().isProjectile()) {
 			if (event.getSource() instanceof EntityDamageSourceIndirect) {
 				if (source.damageType.equals("arrow")) {
-					if (shooter instanceof EntityPlayerMP) {
-						PlayerSkills.ARCHERY.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
-								.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-					}
+					PlayerSkills.ARCHERY.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
+                            .getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
 				} else if (source.damageType.equals("thrown")) {
-					if (shooter instanceof EntityPlayerMP) {
-						PlayerSkills.THROWING.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
-								.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-					}
+					PlayerSkills.THROWING.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
+                            .getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
 				}
 			} else if (event.getSource() instanceof EntityDamageSource) {
 				if (source.damageType.equals("shotgun") || source.damageType.equals("crossbow")) {
-					if (shooter instanceof EntityPlayerMP) {
-						PlayerSkills.SHARPSHOOTING.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
-								.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
-					}
+					PlayerSkills.SHARPSHOOTING.raiseSkill((EntityPlayer) shooter, target.getAttributeMap()
+                            .getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue());
 				}
 			}
 		}
@@ -350,7 +294,7 @@ public class IblisEventHandler {
 		if (!(event.getEntityLiving() instanceof EntityPlayer))
 			return;
 		boolean isBow = event.getItem().getItem() instanceof ItemBow;
-		if (!(isBow))
+		if (!isBow)
 			return;
 		if (!PlayerSkills.ARCHERY.enabled)
 			return;
@@ -358,7 +302,6 @@ public class IblisEventHandler {
 		double skillValue;
 		skillValue = PlayerSkills.ARCHERY.getFullSkillValue(player) + 1.0d;
 		int duration = event.getDuration();
-		// To avoid skipping crossbow reload animation
 		if (skillValue < 1.0d)
 			return;
 		if (skillValue > 63.0d) {
