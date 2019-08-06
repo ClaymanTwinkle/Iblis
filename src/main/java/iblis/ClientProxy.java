@@ -59,25 +59,7 @@ public class ClientProxy extends ServerProxy {
 
 	@Override
 	public void registerRenders() {
-		final ModelResourceLocation mShotgun = new ModelResourceLocation(IblisMod.MODID + ":" + "six_barrels_shotgun",
-				"inventory");
-		final ModelResourceLocation mShotgunAim = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun", "aiming");
 
-		final ModelResourceLocation m0 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "inventory");
-		final ModelResourceLocation m1 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_1");
-		final ModelResourceLocation m2 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_2");
-		final ModelResourceLocation m3 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_3");
-		final ModelResourceLocation m4 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_4");
-		final ModelResourceLocation m5 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_5");
-		final ModelResourceLocation m6 = new ModelResourceLocation(
-				IblisMod.MODID + ":" + "six_barrels_shotgun_reloading", "ammo_6");
 	}
 
 	@SubscribeEvent
